@@ -22,8 +22,8 @@ const apartmentSchema = new Schema({
     location:{type:String},
     images:{String},
     isAvailable:{type:Boolean,default:true},
-    landlord:{type:mongoose.Schema.Types.ObjectId,ref:'User', required:true},
-    review:{type:mongoose.Schema.Types.ObjectId,ref:'Review'},
+    landlord:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
+    reviews:{type:mongoose.Schema.Types.ObjectId,ref:'Review',default:null}
 },{timestamps:true})
 
 // Review Schema

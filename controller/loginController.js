@@ -29,6 +29,55 @@ exports.registerAdmin = async(req,res)=>{
 
     res.status(201).json({message:"Admin account created",newUser})
 }
+// landlord registration
+exports.registerLandlord = async(req, res) => {
+    const { name, email, phone, password } = req.body;
+
+    const userExist = await User.findOne({ email });
+    if (userExist) {
+        return res.json({ message: "Email already in use" })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const user = new User({
+        name,
+        email,
+        phone,
+        password: hashedPassword,
+        role: "landlord",
+        isActive: true,
+    })
+
+    const newUser = await user.save();
+
+    res.status(201).json({ message: "User account created", newUser })
+}
+
+// tenant registration
+exports.registerTenant = async(req, res) => {
+    const { name, email, phone, password } = req.body;
+
+    const userExist = await User.findOne({ email });
+    if (userExist) {
+        return res.json({ message: "Email already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+        name,
+        email,
+        phone,
+        password: hashedPassword,
+        role: "tenant",
+        isActive: true,
+    });
+
+    const newUser = await user.save();
+
+    res.status(201).json({ message: "User account created", newUser });
+}
 
 // login logic
 exports.login = async(req,res)=>{

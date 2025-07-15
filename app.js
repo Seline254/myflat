@@ -14,8 +14,11 @@ app.use("/uploads",express.static)
 
 // register/login route
 const userAuth = require("./routes/loginRoute")
-app.use('/user/auth/',userAuth)
+app.use('/api/auth',userAuth)
 
+// apartment routes
+const apartment = require("./routes/apartmentRoutes")
+app.use("/api/apartment",apartment)
 
 // connection to the database
 mongoose.connect(process.env.MONGO_URI)
