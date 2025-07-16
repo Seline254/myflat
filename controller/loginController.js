@@ -53,7 +53,6 @@ exports.registerLandlord = async(req, res) => {
 
     res.status(201).json({ message: "User account created", newUser })
 }
-
 // tenant registration
 exports.registerTenant = async(req, res) => {
     const { name, email, phone, password } = req.body;

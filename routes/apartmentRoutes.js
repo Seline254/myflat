@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const apartmentController = require('../controller/apartmentContller')
+const apartmentController = require('../controller/apartmentController')
 
 // For authorization purposes
 const {auth,authorizeRoles} = require("../middleware/auth")

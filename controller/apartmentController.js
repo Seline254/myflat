@@ -1,11 +1,13 @@
 const {Apartment} = require('../model/apartmentDB')
 
-//All Apartments
+
+// Add apartment
 exports.addApartment=async (req,res)=>{
     try {
         // Receive data from client
         const newApartment = req.body
         console.log(newApartment)
+        // create an object for the apartment
         const savedApartment = new Apartment(newApartment)
         await savedApartment.save()
         res.json(savedApartment)
@@ -58,7 +60,8 @@ exports.updateApartment = async(req,res)=>{
 //Delete Apartment
 exports.deleteApartment = async(req,res)=>{
     try {
-        const deletedApartment = await Apartment.findByIdAndDelete(req.params.id)
+        const apartmentId = req.params.id
+        const deletedApartment = await Apartment.findByIdAndDelete(apartmentId)
         if(!deletedApartment)return res.status(404).json({message:"Apartment not found"})
         res.json({message:"Apartment deleted successsfully"})
     } catch (error) {
