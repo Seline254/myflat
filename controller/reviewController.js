@@ -2,11 +2,11 @@ const req = require('express/lib/request')
 const {Review,User,Apartment} = require('../model/apartmentDB')
 
 // add,flag(by Landlord),delete(admin only),get all,single)
-const role = req.user.role
+
 
 exports.addReview = async(req,res)=>{
     try {
-        const userId = req.user._id
+        const role = req.user.role
         // receive data from client
         const {apartmentId,rating,comment}  = req.body
 
@@ -45,6 +45,7 @@ exports.getReviews = async(req,res)=>{
 // flag review
 exports.flagReview = async(req,res)=>{
     try {
+        const role = req.user.role
         if(role !== "landlord") return res.status(403).json({message:"Only landlords can flag reviews"})
 
         const review = await Review.findByIdAndUpdate(
@@ -61,6 +62,7 @@ exports.flagReview = async(req,res)=>{
 // delete review
 exports.deleteReview = async(req,res)=>{
     try {
+        const role = req.user.role
         if (role !== 'admin' )return res.status(403).json({message:"Only admins can delete a review"})
         const deletedReview = await Review.findByIdAndDelete(req.params.id)
         res.status(200).json({message:"Review Deleted Successfully."})

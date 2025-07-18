@@ -5,6 +5,7 @@ const loginController = require('../controller/loginController')
 router.post('/register',loginController.registerAdmin)
 router.post('/register-landlord',loginController.registerLandlord)
 router.post('/register-tenant',loginController.registerTenant)
+
 /*router.get('/',loginController.)*/
 router.post('/',loginController.login)
 module.exports = router
