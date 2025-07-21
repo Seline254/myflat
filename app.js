@@ -22,9 +22,9 @@ app.use("/api/apartment",apartment)
 
 // review routes
 const review = require('./routes/reviewRoute')
-app.use('/api/review',apartment)
+app.use('/api/review',review)
 
-console.log("URI:",process.env.MONGO_URI)
+// console.log("URI:",process.env.MONGO_URI)
 
 // connection to the database
 mongoose.connect(process.env.MONGO_URI)

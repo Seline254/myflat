@@ -6,14 +6,13 @@ const {Review,User,Apartment} = require('../model/apartmentDB')
 
 exports.addReview = async(req,res)=>{
     try {
-        const role = req.user.role
         // receive data from client
-        const {apartmentId,rating,comment}  = req.body
+        const {apartmentId,rating,comment}= req.body
 
-        // restricting reviews to tenants only
-        if (role !== "tenant"){
-            return res.status(403).json({message:"Reviews are restricted to tenants only"})
+        if (!apartmentId || !rating || !comment) {
+            return res.status(400).json({ message: "All fields are required." })
         }
+
         // create a review
         const review = new Review(req.body)
         await review.save()
@@ -42,28 +41,38 @@ exports.getReviews = async(req,res)=>{
         res.status(500).json({message:error.message})
     }
 }
-// flag review
-exports.flagReview = async(req,res)=>{
-    try {
-        const role = req.user.role
-        if(role !== "landlord") return res.status(403).json({message:"Only landlords can flag reviews"})
 
-        const review = await Review.findByIdAndUpdate(
-            req.params.id,
-            {isFlagged:true},
-            {new:true}
-        )
-        res.status(200).json({message:"Review Flagged.",review})
-    } catch (error) {
-        res.status(500).json({message:error.message})
+// flag review
+exports.flagReview = async (req, res) => {
+  try {
+    // Fetching the review and populate the apartment to access its landlord
+    const review = await Review.findById(req.params.id).populate('apartment')
+
+    if (!review) {
+      return res.status(404).json({ message: "Review not found." })
     }
+
+    // Ensure the user is the landlord of the apartment
+    // req.user - logged in user
+    if (review.apartment.landlord.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Only the verified landlord can flag this review." })
+    }
+
+    // Flag the review
+    review.isFlagged = true
+    await review.save()
+
+    res.status(200).json({ message: "Review flagged.", review })
+
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 }
+
 
 // delete review
 exports.deleteReview = async(req,res)=>{
     try {
-        const role = req.user.role
-        if (role !== 'admin' )return res.status(403).json({message:"Only admins can delete a review"})
         const deletedReview = await Review.findByIdAndDelete(req.params.id)
         res.status(200).json({message:"Review Deleted Successfully."})
     } catch (error) {

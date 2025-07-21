@@ -5,12 +5,16 @@ const jwt = require('jsonwebtoken')
 // register logic
 exports.registerAdmin = async(req,res)=>{
     const{name,email,phone,password,secretKey} = req.body
+    // console.log("SECRETKEY:",secretKey)
+    // console.log(process.env.secretKey)
+
     // verify admin secret key
     if (secretKey !== process.env.secretKey){
         return res.status(403).json({message:"Unauthorized account creation"})
     }
     // check if the user exists
     const userExist = await User.findOne({email})
+    console.log(userExist)
     if (userExist){
         res.json({message:"Email has already been taken"})
     }
