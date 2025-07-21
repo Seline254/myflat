@@ -19,6 +19,9 @@ app.use('/api/auth',userAuth)
 // apartment routes
 const apartment = require("./routes/apartmentRoutes")
 app.use("/api/apartment",apartment)
+// review routes
+const review = require('./routes/reviewRoute')
+app.use('/api/review',apartment)
 
 // connection to the database
 mongoose.connect(process.env.MONGO_URI)
