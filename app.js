@@ -19,16 +19,19 @@ app.use('/api/auth',userAuth)
 // apartment routes
 const apartment = require("./routes/apartmentRoutes")
 app.use("/api/apartment",apartment)
+
 // review routes
 const review = require('./routes/reviewRoute')
 app.use('/api/review',apartment)
+
+console.log("URI:",process.env.MONGO_URI)
 
 // connection to the database
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>console.log("Mongo Connected"))
 .catch(err=>console.log("Mongo Connection error"))
 
-const PORT = 3000
+const PORT = 3001
 app.listen(PORT,()=>{
     console.log("Server running on port "+PORT+"...")
 })
