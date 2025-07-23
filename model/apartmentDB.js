@@ -23,13 +23,13 @@ const apartmentSchema = new Schema({
     images:{String},
     isAvailable:{type:Boolean,default:true},
     landlord:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
-    reviews:{type:mongoose.Schema.Types.ObjectId,ref:'Review',default:null}
+    reviews:[{type:mongoose.Schema.Types.ObjectId,ref:'Review',default:null}]
 },{timestamps:true})
 
 // Review Schema
 const reviewSchema = new Schema({
     tenant:{type:mongoose.Schema.Types.ObjectId,ref:'User', required:true},
-    apartment:{type:mongoose.Schema.Types.ObjectId,ref:'Apartment', required:true},
+    apartmentId:{type:mongoose.Schema.Types.ObjectId,ref:'Apartment', required:true},
     rating:{type:Number,min:1,max:5,required:true},
     comment:String,
     isFlagged:{type:Boolean,default:false},

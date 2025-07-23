@@ -33,6 +33,7 @@ exports.registerAdmin = async(req,res)=>{
 
     res.status(201).json({message:"Admin account created",newUser})
 }
+
 // landlord registration
 exports.registerLandlord = async(req, res) => {
     const { name, email, phone, password } = req.body;
@@ -57,6 +58,7 @@ exports.registerLandlord = async(req, res) => {
 
     res.status(201).json({ message: "User account created", newUser })
 }
+
 // tenant registration
 exports.registerTenant = async(req, res) => {
     const { name, email, phone, password } = req.body;
@@ -115,4 +117,14 @@ exports.login = async(req,res)=>{
             email:user.email,
             role:user.role
         }})
+}
+
+// View all users
+exports.getAllUsers = async(req,res)=>{
+    try {
+        const users = await User.find()
+        res.status(200).json(users)
+    } catch (error) {
+        res.status(500).json({message:error.message})
+    }
 }

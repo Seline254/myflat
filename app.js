@@ -13,7 +13,7 @@ app.use(cors())
 app.use("/uploads",express.static)
 
 // register/login route
-const userAuth = require("./routes/loginRoute")
+const userAuth = require("./routes/userRoute")
 app.use('/api/auth',userAuth)
 
 // apartment routes
@@ -23,6 +23,10 @@ app.use("/api/apartment",apartment)
 // review routes
 const review = require('./routes/reviewRoute')
 app.use('/api/review',review)
+
+// deletion request routes
+const request = require('./routes/deletionRoute')
+app.use('/api/request',request)
 
 // console.log("URI:",process.env.MONGO_URI)
 

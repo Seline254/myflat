@@ -1,4 +1,4 @@
-const req = require('express/lib/request')
+
 const {Review,Deletion} = require('../model/apartmentDB')
 
 // add,flag(by Landlord),delete(admin only),get all,single)
@@ -14,7 +14,10 @@ exports.addReview = async(req,res)=>{
         }
 
         // create a review
-        const review = new Review(req.body)
+        const review = new Review({
+            ...req.body,
+            tenant:req.user.userId
+        })
         await review.save()
         res.status(201).json({message:"Review created.",review})
     } catch (error) {
@@ -22,26 +25,24 @@ exports.addReview = async(req,res)=>{
     }
 }
 
-// Get a review with filters like a 5-star review or 1 star  by the apartment(specific apartment)
-exports.getReviews = async(req,res)=>{
+// Get reviews for a specific apartment
+exports.getReviews = async (req, res) => {
     try {
-        const {apartmentId} = req.params
-        const {rating} = req.query
-        if(rating){
-            filter.rating = Number(rating)//converts from string to number
-        }
+        const apartmentId = req.params.id
         const reviews = await Review.find({
-            apartment: apartmentId,
-            isDeleted: false  //filters out the soft deleted ones.
-         })
-        .populate("tenant","name")
-        .sort({createdAt:-1}) // sorts the reviews (most recent will come first)
+            apartmentId,
+            isDeleted: false
+        })
+            .populate("tenant", "name") 
+            .sort({ createdAt: -1 })    // Most recent first
+            .limit(2);                  
 
-        res.status(200).json(reviews)
+        res.status(200).json(reviews);
     } catch (error) {
-        res.status(500).json({message:error.message})
+        res.status(500).json({ message: error.message });
     }
-}
+};
+
 
 // flag review
 exports.flagReview = async (req, res) => {

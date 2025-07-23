@@ -1,19 +1,22 @@
-const {Apartment} = require('../model/apartmentDB')
+const {Apartment,Review} = require('../model/apartmentDB')
 
 
 // Add apartment
 exports.addApartment=async (req,res)=>{
     try {
-        // Receive data from client
-        const newApartment = req.body
+        // Receive data from landlord.
+        const newApartment = {
+            ...req.body,
+            landlord:req.user.userId
+        }
         console.log(newApartment)
+
         // create an object for the apartment
         const savedApartment = new Apartment(newApartment)
         await savedApartment.save()
         res.json(savedApartment)
     } catch (error) {
         res.status(500).json({message:error.message})
-
     }
 }
 
@@ -66,5 +69,22 @@ exports.deleteApartment = async(req,res)=>{
         res.json({message:"Apartment deleted successsfully"})
     } catch (error) {
         res.status(500).json({message:error.message})
+    }
+}
+
+
+// Get reviews for a specific apartment with  limit
+exports.getApartmentReviews = async (req, res) => {
+    try {
+        const apartmentId = req.params.id
+
+        const reviews = await Review.find({ apartmentId })
+            .populate('tenant', 'name')
+            .limit(2)
+            .sort({ createdAt: -1 }) // show the newest review first
+
+        res.status(200).json({ reviews })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 }

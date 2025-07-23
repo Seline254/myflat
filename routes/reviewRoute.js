@@ -7,5 +7,5 @@ const {auth,authorizeRoles} = require('../middleware/auth')
 router.post('/add',auth,authorizeRoles('tenant'),reviewController.addReview)
 router.patch('/:id/flag',auth,authorizeRoles('landlord'),reviewController.flagReview)
 router.delete('/:id',auth,authorizeRoles('admin'),reviewController.DeleteReview)
-router.get('/',reviewController.getReviews)
+router.get('/:id',reviewController.getReviews)
 module.exports = router
