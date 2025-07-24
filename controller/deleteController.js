@@ -3,7 +3,10 @@ const { Deletion, Review } = require('../model/apartmentDB');
 // Create a deletion request
 exports.createDeletionRequest = async (req, res) => {
     try {
-        const deletionRequest = new Deletion(req.body)
+        const deletionRequest = new Deletion({
+            ...req.body,
+            landlord:req.user.userId
+        })
         const saved = await deletionRequest.save()
         res.status(201).json(saved)
     } catch (error) {
@@ -14,7 +17,9 @@ exports.createDeletionRequest = async (req, res) => {
 // Get all deletion requests
 exports.getAllDeletions = async (req, res) => {
     try {
-        const deletions = await Deletion.find()
+        const deletions = await Deletion.find({
+            isResolved:false
+        })
             .populate('review')
             .populate('landlord', 'name email')
         res.json(deletions)
@@ -39,23 +44,28 @@ exports.getDeletionById = async (req, res) => {
 // Update deletion request
 exports.updateDeletion = async (req, res) => {
     try {
-        const deletion = await Deletion.findById(req.params.id)
-        if (!deletion) return res.status(404).json({ message: "Not found" })
+        const deletionRequest = await Deletion.findById(req.params.id)
+        .populate("review")
+        if (!deletionRequest) return res.status(404).json({ message: "Not found" })
 
         const { status, paymentStatus } = req.body
 
-        if (status) deletion.status = status
-        if (paymentStatus) deletion.paymentStatus = paymentStatus
+        if (status) deletionRequest.status = status
+        if (paymentStatus) deletionRequest.paymentStatus = paymentStatus
 
         if (status === 'approved' && paymentStatus === 'paid') {
-            await Review.findByIdAndUpdate(deletion.review, {
+            await Review.findByIdAndUpdate(deletionRequest.review, {
+                isResolved:true,
                 isDeleted: true,
                 DeletionFeePaid: true
-            });
+            })
         }
+        // Marks the request as solved so when the admin gets all requests, the solved ones will be hidden
+        deletionRequest.isResolved = true
 
-        await deletion.save()
-        res.json(deletion)
+        await deletionRequest.save()
+        
+        res.json(deletionRequest)
     } catch (error) {
         res.status(400).json({ error: error.message })
     }

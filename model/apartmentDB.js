@@ -33,6 +33,8 @@ const reviewSchema = new Schema({
     rating:{type:Number,min:1,max:5,required:true},
     comment:String,
     isFlagged:{type:Boolean,default:false},
+    // we use[] if multiple people can do a certain thing
+    flaggedBy:[{type:mongoose.Schema.Types.ObjectId,ref:'User', required:true}],
     isResolved:{type:Boolean,default:false},
     isDeleted:{type:Boolean,default:false},
     DeletionFeePaid:{type:Boolean,default:false},
@@ -43,8 +45,9 @@ const deletionSchema = new Schema({
     review:{type:mongoose.Schema.Types.ObjectId,ref:'Review'},
     landlord:{type:mongoose.Schema.Types.ObjectId,ref:'User', required:true},
     reason:String,
+    isResolved:{type:Boolean,default:false},
     status:{type:String,enum:['pending','approved','rejected'],default:"pending"},
-    paymentStatus:{type:String,enum:['unpaid','paid'],default:"paid"}
+    paymentStatus:{type:String,enum:['unpaid','paid'],default:"unpaid"}
 },{timestamps:true})
 
 
