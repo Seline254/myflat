@@ -11,4 +11,5 @@ router.put("/:id",auth,authorizeRoles('admin',' landlord'),apartmentController.u
 router.get("/:id",apartmentController.getApartmentById)
 router.get("/reviews/:id",apartmentController.getApartmentReviews)
 router.delete("/:id",auth,authorizeRoles('admin'),apartmentController.deleteApartment)
+router.get("/search",apartmentController.searchApartments)
 module.exports = router 

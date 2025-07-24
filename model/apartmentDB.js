@@ -13,18 +13,22 @@ const userSchema = new Schema({
     role:{type:String,enum:['admin','landlord','tenant'],required:true},
 },{timestamps:true}) //handles created at and updated at automatically.
 
-// Apartment Schema
+// Apartment Schema 
 const apartmentSchema = new Schema({
-    title:{type:String,required:true},
-    description:{type:String},
-    type:String, // like a one-bedroom e.t.c
-    rent:{type:Number},
-    location:{type:String},
-    images:{String},
-    isAvailable:{type:Boolean,default:true},
-    landlord:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
-    reviews:[{type:mongoose.Schema.Types.ObjectId,ref:'Review',default:null}]
-},{timestamps:true})
+    title: { type: String, required: true },
+    description: { type: String },
+    type: String, // e.g., "1-bedroom"
+    rent: { type: Number },
+    location: {
+        county: { type: String },     // e.g., Nairobi
+        area: { type: String },       // e.g., Embakasi, Westlands
+        estate: { type: String }      // e.g., New World Gardens Estate, ngumba estate.
+    },
+    images: [{ type: String }],       // allow multiple image URLs/paths by use of []
+    isAvailable: { type: Boolean, default: true },
+    landlord: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review', default: null }]
+}, { timestamps: true })
 
 // Review Schema
 const reviewSchema = new Schema({

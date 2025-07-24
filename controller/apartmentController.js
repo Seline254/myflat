@@ -1,22 +1,40 @@
 const {Apartment,Review} = require('../model/apartmentDB')
+const multer = require('multer')
+const fs = require('fs')
+const path = require('path')
 
+const upload = multer({dest:'uploads/'})
+exports.uploadApartmentImages = upload.array('images', 5)
 
-// Add apartment
-exports.addApartment=async (req,res)=>{
+// Add apartment controller
+exports.addApartment = async (req, res) => {
     try {
-        // Receive data from landlord.
-        const newApartment = {
-            ...req.body,
-            landlord:req.user.userId
+        // Process uploaded files
+        let images = []
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                const ext = path.extname(file.originalname)
+                const newFileName = Date.now() + '-' + Math.round(Math.random() * 1E9) + ext
+                const newPath = path.join('uploads', newFileName)
+                fs.renameSync(file.path, newPath)
+                images.push(newPath.replace(/\\/g, '/'))
+            }
         }
-        console.log(newApartment)
 
-        // create an object for the apartment
-        const savedApartment = new Apartment(newApartment)
-        await savedApartment.save()
-        res.json(savedApartment)
+        // Construct apartment data including images and landlord ID
+        const newApartmentData = {
+            ...req.body,
+            landlord: req.user.userId,
+            images  // array of image paths saved in apartment document
+        }
+
+        // Create and save apartment document
+        const newApartment = new Apartment(newApartmentData)
+        const savedApartment = await newApartment.save()
+
+        res.status(201).json(savedApartment)
     } catch (error) {
-        res.status(500).json({message:error.message})
+        res.status(500).json({ message: error.message })
     }
 }
 
@@ -84,6 +102,34 @@ exports.getApartmentReviews = async (req, res) => {
             .sort({ createdAt: -1 }) // show the newest review first
 
         res.status(200).json({ reviews })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+// Search for a specific apartment.
+exports.searchApartments = async (req, res) => {
+    try {
+        const { county, area, estate, minRent, maxRent } = req.query
+
+        const filter = {}
+
+        if (county) filter['location.county'] = county
+        if (area) filter['location.area'] = area
+        if (estate) filter['location.estate'] = estate
+
+        if (minRent || maxRent) {
+            filter.rent = {}
+            if (minRent) filter.rent.$gte = parseInt(minRent)
+            if (maxRent) filter.rent.$lte = parseInt(maxRent)
+        }
+
+        // Only fetch available apartments
+        filter.isAvailable = true
+
+        const results = await Apartment.find(filter).populate('landlord', 'name email')
+
+        res.status(200).json(results)
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
