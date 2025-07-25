@@ -27,7 +27,7 @@ exports.addApartment = async (req, res) => {
             landlord: req.user.userId,
             images  // array of image paths saved in apartment document
         }
-
+        console.log(newApartmentData)
         // Create and save apartment document
         const newApartment = new Apartment(newApartmentData)
         const savedApartment = await newApartment.save()
@@ -110,17 +110,17 @@ exports.getApartmentReviews = async (req, res) => {
 // Search for a specific apartment.
 exports.searchApartments = async (req, res) => {
     try {
-        const { county, area, estate, minRent, maxRent } = req.query
+        const { county, area, estate_Road, minRent, maxRent } = req.query
 
         const filter = {}
 
         if (county) filter['location.county'] = county
         if (area) filter['location.area'] = area
-        if (estate) filter['location.estate'] = estate
+        if (estate_Road) filter['location.estate'] = estate
 
         if (minRent || maxRent) {
             filter.rent = {}
-            if (minRent) filter.rent.$gte = parseInt(minRent)
+            if (minRent) filter.rent.$gte = parseInt(minRent)//parse int converts the min rent which mignt be a string to an integer
             if (maxRent) filter.rent.$lte = parseInt(maxRent)
         }
 

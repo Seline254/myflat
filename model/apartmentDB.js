@@ -22,7 +22,7 @@ const apartmentSchema = new Schema({
     location: {
         county: { type: String },     // e.g., Nairobi
         area: { type: String },       // e.g., Embakasi, Westlands
-        estate: { type: String }      // e.g., New World Gardens Estate, ngumba estate.
+        estate_Road: { type: String ,default:null}      // e.g., New World Gardens Estate, ngumba estate.
     },
     images: [{ type: String }],       // allow multiple image URLs/paths by use of []
     isAvailable: { type: Boolean, default: true },
